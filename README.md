@@ -1,2 +1,52 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/MM63lP-Q)
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=24049692&assignment_repo_type=AssignmentRepo)
+# Workout API
+
+API em FastAPI com MongoDB.
+
+## Requisitos
+
+- Python 3.12+
+- (Opcional) Docker + Docker Compose
+
+## Configuração
+
+Crie o arquivo `.env` a partir do exemplo:
+
+```bash
+# Linux/macOS
+cp .env.example .env
+```
+
+```powershell
+# Windows (PowerShell)
+Copy-Item .env.example .env
+```
+
+Variáveis esperadas:
+
+- `MONGO_URI`
+- `MONGO_DB_NAME`
+- `JWT_SECRET`
+- `JWT_EXPIRE_MINUTES`
+
+Se for rodar fora do Docker, ajuste `MONGO_URI` para `mongodb://localhost:27017`.
+
+## Rodando com Docker
+
+```bash
+docker compose up --build
+```
+
+API: http://localhost:8000
+
+## Rodando local (uv)
+
+```bash
+uv sync
+uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Endpoints
+
+- `GET /health` → status da API
+- `GET /docs` → Swagger UI
+- `GET /openapi.json` → OpenAPI
