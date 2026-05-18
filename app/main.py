@@ -1,6 +1,9 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.core.database import connect_db, close_db
+
+from fastapi import FastAPI
+
+from app.core.database import close_db, connect_db
+from app.routers.health import router as health_router
 
 
 @asynccontextmanager
@@ -16,7 +19,4 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+app.include_router(health_router)
