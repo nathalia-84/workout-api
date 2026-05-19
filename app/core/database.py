@@ -1,18 +1,22 @@
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 from app.core.config import settings
 
-client: AsyncIOMotorClient = None
+import inspect
+
+client: AsyncMongoClient = None
 
 
 async def connect_db():
     global client
-    client = AsyncIOMotorClient(settings.mongo_uri)
+    client = AsyncMongoClient(settings.mongo_uri)
 
 
 async def close_db():
     global client
     if client:
-        client.close()
+        result = client.close()
+        if inspect.isawaitable(result):
+            await result
 
 
 def get_database():
