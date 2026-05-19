@@ -38,11 +38,25 @@ docker compose up --build
 
 API: http://localhost:8000
 
+## Seeds (popular o banco)
+
+Com os containers já rodando:
+
+```bash
+docker compose exec api uv run python -m seeds.seed
+```
+
 ## Rodando local (uv)
 
 ```bash
 uv sync
 uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+Para rodar seeds localmente:
+
+```bash
+uv run python -m seeds.seed
 ```
 
 ## Endpoints
