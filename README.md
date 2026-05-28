@@ -65,3 +65,6 @@ uv run python -m seeds.seed
 - `GET /docs` → Swagger UI
 - `GET /openapi.json` → OpenAPI
 
+## Referências
+
+- [Trabalho da Segunda Unidade — API REST com MongoDB](https://gustavoleitao.notion.site/Trabalho-da-Segunda-Unidade-API-REST-com-MongoDB-3599da677dce80769fe6e6f189eb735e)
