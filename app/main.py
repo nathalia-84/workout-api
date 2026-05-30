@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.core.database import close_db, connect_db
 from app.routers.health import router as health_router
+from app.routers.workout import router as workout_router
 
 
 @asynccontextmanager
@@ -20,3 +21,4 @@ app = FastAPI(
 )
 
 app.include_router(health_router)
+app.include_router(workout_router)
