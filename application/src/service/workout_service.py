@@ -6,7 +6,7 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 from pymongo.asynchronous.database import AsyncDatabase
 
-from src.models.workout import WorkoutCreate, WorkoutExercise, WorkoutUpdate
+from src.model.workout import WorkoutCreate, WorkoutExercise, WorkoutUpdate
 
 
 def _utc_now() -> datetime:
