@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from src.core.dependencies import get_db
-from src.models.training_plan import (
+from src.model.training_plan import (
     TrainingPlanCreate,
     TrainingPlanResponse,
     TrainingPlanUpdate,
