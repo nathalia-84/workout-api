@@ -8,7 +8,7 @@
 
 - [x] **CRUD de Workouts**: Implementar o CRUD completo (POST, GET, PUT, DELETE) na rota `/workouts`, focando na modelagem que armazena a lista de exercícios de um usuário com detalhes de séries e cargas (`reps`, `load_kg`).
 
-- [ ] **CRUD de Training Plans**: Implementar o CRUD completo (POST, GET, PUT, DELETE) na rota `/training-plans`, focando na modelagem do agendamento (`schedule`) que referencia os treinos criados.
+- [x] **CRUD de Training Plans**: Implementar o CRUD completo (POST, GET, PUT, DELETE) na rota `/training-plans`, focando na modelagem do agendamento (`schedule`) que referencia os treinos criados.
 
 - [ ] **Sessões de Treino e Máquina de Estados**: Implementar as rotas para criar e gerenciar sessões. Criar a lógica da Máquina de Estados de Sessões (`pending -> in_progress -> paused -> completed`) em `services/sessions.py` e as rotas PATCH de transição correspondentes.
 
