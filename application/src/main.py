@@ -2,10 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.routers.training_plan import router as training_plan_router
-from src.routers.workout import router as workout_router
+from src.router.training_plan import router as training_plan_router
+from src.router.workout import router as workout_router
 from src.core.database import close_db, connect_db
-from src.routers.health import router as health_router
+from src.router.health import router as health_router
 
 
 @asynccontextmanager

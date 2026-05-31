@@ -6,7 +6,7 @@ from src.models.training_plan import (
     TrainingPlanResponse,
     TrainingPlanUpdate,
 )
-from src.services.training_plan_service import (
+from src.service.training_plan_service import (
     create_training_plan as create_training_plan_service,
     delete_training_plan as delete_training_plan_service,
     get_training_plan as get_training_plan_service,

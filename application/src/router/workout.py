@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from src.core.dependencies import get_db
 from src.models.workout import WorkoutCreate, WorkoutResponse, WorkoutUpdate
-from src.services.workout_service import (
+from src.service.workout_service import (
     create_workout as create_workout_service,
     delete_workout as delete_workout_service,
     get_workout as get_workout_service,
