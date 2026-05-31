@@ -1,16 +1,16 @@
 from bson import ObjectId
 
 muscle_groups = [
-    {"_id": ObjectId(), "name": "Peitoral",        "slug": "chest"},
-    {"_id": ObjectId(), "name": "Costas",           "slug": "back"},
-    {"_id": ObjectId(), "name": "Ombros",           "slug": "shoulders"},
-    {"_id": ObjectId(), "name": "Bíceps",           "slug": "biceps"},
-    {"_id": ObjectId(), "name": "Tríceps",          "slug": "triceps"},
-    {"_id": ObjectId(), "name": "Quadríceps",       "slug": "quadriceps"},
-    {"_id": ObjectId(), "name": "Posterior",        "slug": "hamstrings"},
-    {"_id": ObjectId(), "name": "Glúteos",          "slug": "glutes"},
-    {"_id": ObjectId(), "name": "Panturrilha",      "slug": "calves"},
-    {"_id": ObjectId(), "name": "Abdômen",          "slug": "core"},
+    {"_id": ObjectId(), "name": "Peitoral", "slug": "chest"},
+    {"_id": ObjectId(), "name": "Costas", "slug": "back"},
+    {"_id": ObjectId(), "name": "Ombros", "slug": "shoulders"},
+    {"_id": ObjectId(), "name": "Bíceps", "slug": "biceps"},
+    {"_id": ObjectId(), "name": "Tríceps", "slug": "triceps"},
+    {"_id": ObjectId(), "name": "Quadríceps", "slug": "quadriceps"},
+    {"_id": ObjectId(), "name": "Posterior", "slug": "hamstrings"},
+    {"_id": ObjectId(), "name": "Glúteos", "slug": "glutes"},
+    {"_id": ObjectId(), "name": "Panturrilha", "slug": "calves"},
+    {"_id": ObjectId(), "name": "Abdômen", "slug": "core"},
 ]
 
 # Build a lookup so exercises can reference groups by slug
@@ -58,7 +58,6 @@ exercises = [
         "difficulty": "beginner",
         "equipment": "machine",
     },
-
     # Costas
     {
         "_id": ObjectId(),
@@ -100,7 +99,6 @@ exercises = [
         "difficulty": "advanced",
         "equipment": "barbell",
     },
-
     # Ombros
     {
         "_id": ObjectId(),
@@ -126,7 +124,6 @@ exercises = [
         "difficulty": "intermediate",
         "equipment": "barbell",
     },
-
     # Bíceps
     {
         "_id": ObjectId(),
@@ -152,7 +149,6 @@ exercises = [
         "difficulty": "intermediate",
         "equipment": "machine",
     },
-
     # Tríceps
     {
         "_id": ObjectId(),
@@ -178,7 +174,6 @@ exercises = [
         "difficulty": "beginner",
         "equipment": "bodyweight",
     },
-
     # Quadríceps
     {
         "_id": ObjectId(),
@@ -212,7 +207,6 @@ exercises = [
         "difficulty": "intermediate",
         "equipment": "dumbbell",
     },
-
     # Posterior
     {
         "_id": ObjectId(),
@@ -230,7 +224,6 @@ exercises = [
         "difficulty": "intermediate",
         "equipment": "barbell",
     },
-
     # Glúteos
     {
         "_id": ObjectId(),
@@ -248,7 +241,6 @@ exercises = [
         "difficulty": "beginner",
         "equipment": "machine",
     },
-
     # Panturrilha
     {
         "_id": ObjectId(),
@@ -266,7 +258,6 @@ exercises = [
         "difficulty": "beginner",
         "equipment": "machine",
     },
-
     # Abdômen
     {
         "_id": ObjectId(),

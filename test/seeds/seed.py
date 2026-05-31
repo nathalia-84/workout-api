@@ -22,5 +22,6 @@ async def seed():
         # 4. Clean up the connection
         await close_db()
 
+
 if __name__ == "__main__":
     asyncio.run(seed())
