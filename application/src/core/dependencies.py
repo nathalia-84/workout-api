@@ -1,4 +1,3 @@
-
 from src.core.database import get_database
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -22,6 +21,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Não foi possível validar as credenciais",
         )
     return user_id
+
 
 def get_db():
     return get_database()

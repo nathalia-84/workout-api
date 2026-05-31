@@ -4,6 +4,7 @@ from typing import Optional
 from bson import ObjectId
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
+
 class TrainingPlanScheduleItem(BaseModel):
     weekday: int = Field(ge=0, le=6)  # 0=Monday, 6=Sunday
     workout_id: str
@@ -16,6 +17,7 @@ class TrainingPlanScheduleItem(BaseModel):
         if not ObjectId.is_valid(value):
             raise ValueError("Invalid workout_id")
         return value
+
 
 class TrainingPlanCreate(BaseModel):
     name: str
@@ -47,4 +49,3 @@ class TrainingPlanResponse(BaseModel):
         if isinstance(value, ObjectId):
             return str(value)
         return value
-

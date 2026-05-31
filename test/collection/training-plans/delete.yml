@@ -1,14 +1,14 @@
 info:
-  name: get
+  name: delete
   type: http
-  seq: 4
+  seq: 5
 
 http:
-  method: GET
-  url: http://localhost:8000/api/workouts/:workoutId
+  method: DELETE
+  url: http://localhost:8000/api/training-plans/:trainingPlanId
   params:
-    - name: workoutId
-      value: "{{workout.id}}"
+    - name: trainingPlanId
+      value: ""
       type: path
   auth: inherit
 

@@ -15,6 +15,11 @@ http:
       }
   auth: inherit
 
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar("workout", res.body)
+
 settings:
   encodeUrl: true
   timeout: 0

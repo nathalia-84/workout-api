@@ -6,7 +6,11 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 from pymongo.asynchronous.database import AsyncDatabase
 
-from app.models.training_plan import TrainingPlanCreate, TrainingPlanUpdate, TrainingPlanScheduleItem
+from src.models.training_plan import (
+    TrainingPlanCreate,
+    TrainingPlanUpdate,
+    TrainingPlanScheduleItem,
+)
 
 
 def _utc_now() -> datetime:
@@ -48,7 +52,9 @@ def _serialize_training_plan(doc: dict) -> dict:
     return out
 
 
-async def create_training_plan(db: AsyncDatabase, payload: TrainingPlanCreate, *, user_id: str | None = None) -> dict:
+async def create_training_plan(
+    db: AsyncDatabase, payload: TrainingPlanCreate, *, user_id: str | None = None
+) -> dict:
     now = _utc_now()
 
     doc: dict = {
@@ -64,7 +70,10 @@ async def create_training_plan(db: AsyncDatabase, payload: TrainingPlanCreate, *
     doc["_id"] = result.inserted_id
     return _serialize_training_plan(doc)
 
-async def get_training_plan(db: AsyncDatabase, plan_id: str, *, user_id: str | None = None) -> dict | None:
+
+async def get_training_plan(
+    db: AsyncDatabase, plan_id: str, *, user_id: str | None = None
+) -> dict | None:
     query: dict = {"_id": _require_object_id(plan_id, field_name="plan_id")}
     if user_id is not None:
         query["user_id"] = user_id
@@ -72,7 +81,10 @@ async def get_training_plan(db: AsyncDatabase, plan_id: str, *, user_id: str | N
     doc = await db.training_plans.find_one(query)
     return _serialize_training_plan(doc)
 
-async def list_training_plans(db: AsyncDatabase, *, user_id: str | None = None) -> list[dict]:
+
+async def list_training_plans(
+    db: AsyncDatabase, *, user_id: str | None = None
+) -> list[dict]:
     query = {}
     if user_id is not None:
         query["user_id"] = user_id
@@ -83,7 +95,14 @@ async def list_training_plans(db: AsyncDatabase, *, user_id: str | None = None) 
         plans.append(_serialize_training_plan(doc))
     return plans
 
-async def update_training_plan(db: AsyncDatabase, plan_id: str, payload: TrainingPlanUpdate, *, user_id: str | None = None) -> dict | None:
+
+async def update_training_plan(
+    db: AsyncDatabase,
+    plan_id: str,
+    payload: TrainingPlanUpdate,
+    *,
+    user_id: str | None = None,
+) -> dict | None:
     update_data = payload.model_dump(exclude_none=True)
     if not update_data:
         return await get_training_plan(db, plan_id, user_id=user_id)
@@ -105,7 +124,10 @@ async def update_training_plan(db: AsyncDatabase, plan_id: str, payload: Trainin
     )
     return _serialize_training_plan(updated_doc)
 
-async def delete_training_plan(db: AsyncDatabase, plan_id: str, *, user_id: str | None = None) -> bool:
+
+async def delete_training_plan(
+    db: AsyncDatabase, plan_id: str, *, user_id: str | None = None
+) -> bool:
     query: dict = {"_id": _require_object_id(plan_id, field_name="plan_id")}
     if user_id is not None:
         query["user_id"] = user_id

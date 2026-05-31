@@ -49,15 +49,10 @@ def _serialize_workout(doc: dict) -> dict:
     return out
 
 
-<<<<<<< HEAD:src/app/services/workout_service.py
-async def create_workout(db: AsyncDatabase, payload: WorkoutCreate, *, user_id: str | None = None) -> dict:
-    now = _utc_now()
-=======
 async def create_workout(
-    db, payload: WorkoutCreate, *, user_id: str | None = None
+    db: AsyncDatabase, payload: WorkoutCreate, *, user_id: str | None = None
 ) -> dict:
-    now = _utc_now_iso()
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/services/workout_service.py
+    now = _utc_now()
 
     doc: dict = {
         "name": payload.name,
@@ -73,13 +68,9 @@ async def create_workout(
     return _serialize_workout(doc)
 
 
-<<<<<<< HEAD:src/app/services/workout_service.py
-async def list_workouts(db: AsyncDatabase, *, user_id: str | None = None, limit: int = 100) -> list[dict]:
-=======
 async def list_workouts(
-    db, *, user_id: str | None = None, limit: int = 100
+    db: AsyncDatabase, *, user_id: str | None = None, limit: int = 100
 ) -> list[dict]:
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/services/workout_service.py
     query: dict = {}
     if user_id is not None:
         query["user_id"] = user_id
@@ -91,13 +82,9 @@ async def list_workouts(
     return items
 
 
-<<<<<<< HEAD:src/app/services/workout_service.py
-async def get_workout(db: AsyncDatabase, workout_id: str, *, user_id: str | None = None) -> dict | None:
-=======
 async def get_workout(
-    db, workout_id: str, *, user_id: str | None = None
+    db: AsyncDatabase, workout_id: str, *, user_id: str | None = None
 ) -> dict | None:
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/services/workout_service.py
     workout_oid = _require_object_id(workout_id, field_name="workout_id")
     query: dict = {"_id": workout_oid}
     if user_id is not None:
@@ -137,7 +124,9 @@ async def update_workout(
     return _serialize_workout(doc) if doc else None
 
 
-async def delete_workout(db: AsyncDatabase, workout_id: str, *, user_id: str | None = None) -> bool:
+async def delete_workout(
+    db: AsyncDatabase, workout_id: str, *, user_id: str | None = None
+) -> bool:
     workout_oid = _require_object_id(workout_id, field_name="workout_id")
     query: dict = {"_id": workout_oid}
     if user_id is not None:

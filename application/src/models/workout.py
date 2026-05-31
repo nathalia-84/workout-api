@@ -5,7 +5,6 @@ from bson import ObjectId
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
 
-
 class WorkoutSet(BaseModel):
     reps: int = Field(ge=1)
     weight: float = Field(ge=0)
@@ -13,13 +12,11 @@ class WorkoutSet(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-
 class WorkoutExercise(BaseModel):
     exercise_id: str
     order: int = Field(ge=1)
     sets: list[WorkoutSet]
 
-<<<<<<< HEAD:app/models/workout.py
     model_config = ConfigDict(extra="forbid")
 
     @field_validator("exercise_id")
@@ -29,28 +26,20 @@ class WorkoutExercise(BaseModel):
             raise ValueError("Invalid exercise_id")
         return value
 
-=======
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/models/workout.py
 
 class WorkoutCreate(BaseModel):
     name: str
     exercises: list[WorkoutExercise]
 
-<<<<<<< HEAD:app/models/workout.py
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-=======
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/models/workout.py
 
 class WorkoutUpdate(BaseModel):
     name: Optional[str] = None
     exercises: Optional[list[WorkoutExercise]] = None
 
-<<<<<<< HEAD:app/models/workout.py
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
-=======
->>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/models/workout.py
 
 class WorkoutResponse(BaseModel):
     workout_id: str = Field(validation_alias=AliasChoices("_id", "workout_id"))
