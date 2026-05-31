@@ -4,6 +4,7 @@ from fastapi import FastAPI
 
 from app.core.database import close_db, connect_db
 from app.routers.health import router as health_router
+from app.routers.training_plan import router as training_plan_router
 from app.routers.workout import router as workout_router
 
 
@@ -22,3 +23,4 @@ app = FastAPI(
 
 app.include_router(health_router)
 app.include_router(workout_router, prefix="/api")
+app.include_router(training_plan_router, prefix="/api")

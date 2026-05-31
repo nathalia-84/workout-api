@@ -46,7 +46,7 @@ async def get_workout(workout_id: str, db=Depends(get_db)):
 
     return workout
 
-@router.put("/{workout_id}", response_model=WorkoutResponse)
+@router.patch("/{workout_id}", response_model=WorkoutResponse)
 async def update_workout(workout_id: str, payload: WorkoutUpdate, db=Depends(get_db)):
     try:
         workout = await update_workout_service(db, workout_id, payload)
