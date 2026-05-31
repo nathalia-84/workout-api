@@ -6,7 +6,7 @@ from bson import ObjectId
 from pymongo import ReturnDocument
 from pymongo.asynchronous.database import AsyncDatabase
 
-from src.models.training_plan import (
+from src.model.training_plan import (
     TrainingPlanCreate,
     TrainingPlanUpdate,
     TrainingPlanScheduleItem,
