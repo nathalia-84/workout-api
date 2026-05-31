@@ -1,28 +1,18 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
+!**/.env.example
 *.egg-info
-
-# Virtual environments
-.venv
-
-# Environment variables (do not commit secrets)
-.env
-.env.*
-!.env.example
-
-# Test / type-check / lint caches
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-
-# Editor / OS files
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+*.py[oc]
+**/__pycache__/
+**/.coverage
+**/.DS_Store
+.env*
+**/.idea/
+**/.mypy_cache/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.venv
+**/.vscode/
+**/build/
+**/coverage.xml
+**/dist/
+**/Thumbs.db
+**/wheels/

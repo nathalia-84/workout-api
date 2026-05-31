@@ -50,7 +50,7 @@ docker compose exec api uv run python -m seeds.seed
 
 ```bash
 uv sync
-uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 Para rodar seeds localmente:
@@ -65,3 +65,6 @@ uv run python -m seeds.seed
 - `GET /docs` → Swagger UI
 - `GET /openapi.json` → OpenAPI
 
+## Referências
+
+- [Trabalho da Segunda Unidade — API REST com MongoDB](https://gustavoleitao.notion.site/Trabalho-da-Segunda-Unidade-API-REST-com-MongoDB-3599da677dce80769fe6e6f189eb735e)
