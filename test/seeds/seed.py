@@ -1,6 +1,6 @@
 import asyncio
-from src.app.core.database import connect_db, close_db, get_database
-from seeds.data import muscle_groups, exercises
+from src.core.database import connect_db, close_db, get_database
+from test.seeds.data import muscle_groups, exercises
 
 
 async def seed():

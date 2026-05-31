@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+<<<<<<< HEAD:src/app/main.py
 <<<<<<< HEAD
 from app.core.database import close_db, connect_db
 from app.routers.health import router as health_router
@@ -13,6 +14,12 @@ from src.app.routers.workout import router as workout_router
 from src.app.core.database import close_db, connect_db
 from src.app.routers.health import router as health_router
 >>>>>>> 96f03f1 (fix: update module locations)
+=======
+from src.routers.workout import router as workout_router
+from src.core.database import close_db, connect_db
+from src.routers.health import router as health_router
+
+>>>>>>> cbbdfae (chore: create major top structuring dirs):application/src/main.py
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

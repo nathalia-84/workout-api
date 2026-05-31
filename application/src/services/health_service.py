@@ -1,2 +1,2 @@
 def get_health() -> dict[str, str]:
-    return {"status": "ok"}
+    return {"status": "ok vapo"}

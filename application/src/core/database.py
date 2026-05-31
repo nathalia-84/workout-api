@@ -1,5 +1,5 @@
 from pymongo import AsyncMongoClient
-from src.app.core.config import settings
+from src.core.config import settings
 
 import inspect
 
