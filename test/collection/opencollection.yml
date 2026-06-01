@@ -2,6 +2,22 @@ opencollection: 1.0.0
 
 info:
   name: workout-api
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  headers:
+    - name: Authorization
+      value: Bearer {{token.access_token}}
 bundled: false
 extensions:
   bruno:

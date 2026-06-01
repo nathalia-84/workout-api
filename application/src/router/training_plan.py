@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
-from src.core.dependencies import get_db
+from src.core.dependencies import get_current_user, get_db
 from src.model.training_plan import (
     TrainingPlanCreate,
     TrainingPlanResponse,
@@ -16,7 +16,6 @@ from src.service.training_plan_service import (
     update_training_plan as update_training_plan_service,
 )
 
-
 router = APIRouter(
     prefix="/training-plans",
     tags=["training-plan"],
@@ -29,9 +28,13 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     response_model_exclude_none=True,
 )
-async def create_training_plan(payload: TrainingPlanCreate, db=Depends(get_db)):
+async def create_training_plan(
+    payload: TrainingPlanCreate,
+    db=Depends(get_db),
+    user_id: str = Depends(get_current_user),
+):
     try:
-        return await create_training_plan_service(db, payload)
+        return await create_training_plan_service(db, payload, user_id=user_id)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
@@ -46,10 +49,15 @@ async def create_training_plan(payload: TrainingPlanCreate, db=Depends(get_db)):
 async def list_training_plans(
     query: str | None = Query(None),
     fields: str | None = Query(None),
-    db=Depends(get_db)
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=500),
+    db=Depends(get_db),
+    user_id: str = Depends(get_current_user),
 ):
     try:
-        return await list_training_plans_service(db, query_str=query, fields=fields)
+        return await list_training_plans_service(
+            db, query_str=query, fields=fields, page=page, limit=limit, user_id=user_id
+        )
     except InvalidQueryError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
@@ -65,9 +73,14 @@ async def list_training_plans(
     response_model=TrainingPlanResponse,
     response_model_exclude_none=True,
 )
-async def get_training_plan(plan_id: str, fields: str | None = Query(None), db=Depends(get_db)):
+async def get_training_plan(
+    plan_id: str,
+    fields: str | None = Query(None),
+    db=Depends(get_db),
+    user_id: str = Depends(get_current_user),
+):
     try:
-        plan = await get_training_plan_service(db, plan_id, fields=fields)
+        plan = await get_training_plan_service(db, plan_id, fields=fields, user_id=user_id)
     except InvalidFieldsError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
@@ -91,10 +104,13 @@ async def get_training_plan(plan_id: str, fields: str | None = Query(None), db=D
     response_model_exclude_none=True,
 )
 async def update_training_plan(
-    plan_id: str, payload: TrainingPlanUpdate, db=Depends(get_db)
+    plan_id: str,
+    payload: TrainingPlanUpdate,
+    db=Depends(get_db),
+    user_id: str = Depends(get_current_user),
 ):
     try:
-        plan = await update_training_plan_service(db, plan_id, payload)
+        plan = await update_training_plan_service(db, plan_id, payload, user_id=user_id)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
@@ -109,9 +125,13 @@ async def update_training_plan(
 
 
 @router.delete("/{plan_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_training_plan(plan_id: str, db=Depends(get_db)):
+async def delete_training_plan(
+    plan_id: str,
+    db=Depends(get_db),
+    user_id: str = Depends(get_current_user),
+):
     try:
-        deleted = await delete_training_plan_service(db, plan_id)
+        deleted = await delete_training_plan_service(db, plan_id, user_id=user_id)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
