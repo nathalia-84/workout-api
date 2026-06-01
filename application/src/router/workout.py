@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from src.core.dependencies import get_db
 from src.model.workout import WorkoutCreate, WorkoutResponse, WorkoutUpdate
 from src.service.workout_service import (
+    InvalidFieldsError,
     InvalidQueryError,
     create_workout as create_workout_service,
     delete_workout as delete_workout_service,
@@ -30,21 +31,30 @@ async def create_workout(payload: WorkoutCreate, db=Depends(get_db)):
 @router.get("/", response_model=list[WorkoutResponse], response_model_exclude_none=True)
 async def list_workouts(
     query: str | None = Query(None),
+    fields: str | None = Query(None),
     limit: int = Query(default=100, ge=1, le=500),
     db=Depends(get_db),
 ):
     try:
-        return await list_workouts_service(db, query_str=query, limit=limit)
+        return await list_workouts_service(db, query_str=query, fields=fields, limit=limit)
     except InvalidQueryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
+    except InvalidFieldsError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
         )
 
 
 @router.get("/{workout_id}", response_model=WorkoutResponse, response_model_exclude_none=True)
-async def get_workout(workout_id: str, db=Depends(get_db)):
+async def get_workout(workout_id: str, fields: str | None = Query(None), db=Depends(get_db)):
     try:
-        workout = await get_workout_service(db, workout_id)
+        workout = await get_workout_service(db, workout_id, fields=fields)
+    except InvalidFieldsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)

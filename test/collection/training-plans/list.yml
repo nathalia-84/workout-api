@@ -5,8 +5,11 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8000/api/training-plans?fields=name
+  url: http://localhost:8000/api/training-plans?query={"name":{"$regex":"xp","$options":"i"}}&fields=name
   params:
+    - name: query
+      value: '{"name":{"$regex":"xp","$options":"i"}}'
+      type: query
     - name: fields
       value: name
       type: query
