@@ -8,6 +8,7 @@ from src.model.training_plan import (
 )
 from src.service.training_plan_service import (
     InvalidFieldsError,
+    InvalidQueryError,
     create_training_plan as create_training_plan_service,
     delete_training_plan as delete_training_plan_service,
     get_training_plan as get_training_plan_service,
@@ -23,7 +24,10 @@ router = APIRouter(
 
 
 @router.post(
-    "/", response_model=TrainingPlanResponse, status_code=status.HTTP_201_CREATED
+    "/",
+    response_model=TrainingPlanResponse,
+    status_code=status.HTTP_201_CREATED,
+    response_model_exclude_none=True,
 )
 async def create_training_plan(payload: TrainingPlanCreate, db=Depends(get_db)):
     try:
@@ -34,17 +38,33 @@ async def create_training_plan(payload: TrainingPlanCreate, db=Depends(get_db)):
         )
 
 
-@router.get("/", response_model=list[TrainingPlanResponse], response_model_exclude_none=True)
-async def list_training_plans(fields: str | None = Query(None), db=Depends(get_db)):
+@router.get(
+    "/",
+    response_model=list[TrainingPlanResponse],
+    response_model_exclude_none=True,
+)
+async def list_training_plans(
+    query: str | None = Query(None),
+    fields: str | None = Query(None),
+    db=Depends(get_db)
+):
     try:
-        return await list_training_plans_service(db, fields=fields)
+        return await list_training_plans_service(db, query_str=query, fields=fields)
+    except InvalidQueryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
     except InvalidFieldsError as exc:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
         )
 
 
-@router.get("/{plan_id}", response_model=TrainingPlanResponse, response_model_exclude_none=True,)
+@router.get(
+    "/{plan_id}",
+    response_model=TrainingPlanResponse,
+    response_model_exclude_none=True,
+)
 async def get_training_plan(plan_id: str, fields: str | None = Query(None), db=Depends(get_db)):
     try:
         plan = await get_training_plan_service(db, plan_id, fields=fields)
@@ -65,7 +85,11 @@ async def get_training_plan(plan_id: str, fields: str | None = Query(None), db=D
     return plan
 
 
-@router.patch("/{plan_id}", response_model=TrainingPlanResponse)
+@router.patch(
+    "/{plan_id}",
+    response_model=TrainingPlanResponse,
+    response_model_exclude_none=True,
+)
 async def update_training_plan(
     plan_id: str, payload: TrainingPlanUpdate, db=Depends(get_db)
 ):

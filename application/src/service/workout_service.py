@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import json
+import re
 
 from bson import ObjectId
 from pymongo import ReturnDocument
@@ -11,6 +12,10 @@ from src.model.workout import WorkoutCreate, WorkoutExercise, WorkoutUpdate
 
 
 class InvalidQueryError(ValueError):
+    pass
+
+
+class InvalidFieldsError(ValueError):
     pass
 
 
@@ -66,6 +71,22 @@ def _parse_query(query_str: str | None) -> dict:
         raise InvalidQueryError(f"Invalid JSON syntax in query: {str(exc)}")
 
 
+def _parse_projection(fields: str | None) -> dict | None:
+    if not fields or not fields.strip():
+        return None
+
+    projection = {}
+    pattern = re.compile(r"^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*$")
+
+    for field in fields.split(","):
+        clean_field = field.strip()
+        if not pattern.match(clean_field):
+            raise InvalidFieldsError(f"Invalid MongoDB projection syntax: '{field}'")
+        projection[clean_field] = 1
+
+    return projection
+
+
 async def create_workout(
     db: AsyncDatabase, payload: WorkoutCreate, *, user_id: str | None = None
 ) -> dict:
@@ -86,14 +107,19 @@ async def create_workout(
 
 
 async def list_workouts(
-    db: AsyncDatabase, *, user_id: str | None = None, query_str: str | None = None, limit: int = 100
+    db: AsyncDatabase,
+    *,
+    user_id: str | None = None,
+    query_str: str | None = None,
+    fields: str | None = None,
+    limit: int = 100,
 ) -> list[dict]:
     filters = _parse_query(query_str)
-
     if user_id is not None:
         filters["user_id"] = user_id
 
-    cursor = db.workouts.find(filters).sort("created_at", -1).limit(limit)
+    projection = _parse_projection(fields)
+    cursor = db.workouts.find(filters, projection).sort("created_at", -1).limit(limit)
     items: list[dict] = []
     async for doc in cursor:
         items.append(_serialize_workout(doc))
@@ -101,14 +127,15 @@ async def list_workouts(
 
 
 async def get_workout(
-    db: AsyncDatabase, workout_id: str, *, user_id: str | None = None
+    db: AsyncDatabase, workout_id: str, *, user_id: str | None = None, fields: str | None = None
 ) -> dict | None:
     workout_oid = _require_object_id(workout_id, field_name="workout_id")
     query: dict = {"_id": workout_oid}
     if user_id is not None:
         query["user_id"] = user_id
 
-    doc = await db.workouts.find_one(query)
+    projection = _parse_projection(fields)
+    doc = await db.workouts.find_one(query, projection)
     return _serialize_workout(doc) if doc else None
 
 
