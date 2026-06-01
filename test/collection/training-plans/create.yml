@@ -1,0 +1,27 @@
+info:
+  name: create
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8000/api/training-plans
+  body:
+    type: json
+    data: |-
+      {
+        "name": "{{$randomBs}}",
+        "schedule": []
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar("trainingPlan", res.body)
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

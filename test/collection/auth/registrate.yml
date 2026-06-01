@@ -1,0 +1,28 @@
+info:
+  name: registrate
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8000/auth/registrations
+  body:
+    type: json
+    data: |-
+      {
+        "username": "{{$randomUserName}}",
+        "email": "{{$randomEmail}}",
+        "password": "{{$randomPassword}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar("user", req.body)
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
