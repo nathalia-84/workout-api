@@ -125,14 +125,28 @@ async def get_training_plan(
 
 
 async def list_training_plans(
-    db: AsyncDatabase, *, user_id: str | None = None, query_str: str | None = None, fields: str | None = None
+    db: AsyncDatabase,
+    *,
+    user_id: str | None = None,
+    query_str: str | None = None,
+    fields: str | None = None,
+    page: int = 1,
+    limit: int = 10,
 ) -> list[dict]:
     filters = _parse_query(query_str)
     if user_id is not None:
         filters["user_id"] = user_id
 
     projection = _parse_projection(fields)
-    cursor = db.training_plans.find(filters, projection).sort("created_at", -1)
+    skip = (page - 1) * limit
+
+    cursor = (
+        db.training_plans.find(filters, projection)
+        .sort("created_at", -1)
+        .skip(skip)
+        .limit(limit)
+    )
+
     plans = []
     async for doc in cursor:
         plans.append(_serialize_training_plan(doc))
