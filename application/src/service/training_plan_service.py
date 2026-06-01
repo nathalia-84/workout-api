@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import re
 
 from bson import ObjectId
 from pymongo import ReturnDocument
@@ -11,6 +12,10 @@ from src.model.training_plan import (
     TrainingPlanUpdate,
     TrainingPlanScheduleItem,
 )
+
+
+class InvalidFieldsError(ValueError):
+    pass
 
 
 def _utc_now() -> datetime:
@@ -39,6 +44,9 @@ def _serialize_training_plan(doc: dict) -> dict:
 
     out = {**doc}
 
+    if "_id" in out and isinstance(out["_id"], ObjectId):
+        out["_id"] = str(out["_id"])
+
     schedule = out.get("schedule")
     if isinstance(schedule, list):
         serialized_schedule: list[dict] = []
@@ -50,6 +58,22 @@ def _serialize_training_plan(doc: dict) -> dict:
         out["schedule"] = serialized_schedule
 
     return out
+
+
+def _parse_projection(fields: str | None) -> dict | None:
+    if not fields or not fields.strip():
+        return None
+
+    projection = {}
+    pattern = re.compile(r"^[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*$")
+
+    for field in fields.split(","):
+        clean_field = field.strip()
+        if not pattern.match(clean_field):
+            raise InvalidFieldsError(f"Invalid field syntax: '{field}'")
+        projection[clean_field] = 1
+
+    return projection
 
 
 async def create_training_plan(
@@ -72,24 +96,26 @@ async def create_training_plan(
 
 
 async def get_training_plan(
-    db: AsyncDatabase, plan_id: str, *, user_id: str | None = None
+    db: AsyncDatabase, plan_id: str, *, user_id: str | None = None, fields: str | None = None
 ) -> dict | None:
     query: dict = {"_id": _require_object_id(plan_id, field_name="plan_id")}
     if user_id is not None:
         query["user_id"] = user_id
 
-    doc = await db.training_plans.find_one(query)
+    projection = _parse_projection(fields)
+    doc = await db.training_plans.find_one(query, projection)
     return _serialize_training_plan(doc)
 
 
 async def list_training_plans(
-    db: AsyncDatabase, *, user_id: str | None = None
+    db: AsyncDatabase, *, user_id: str | None = None, fields: str | None = None
 ) -> list[dict]:
     query = {}
     if user_id is not None:
         query["user_id"] = user_id
 
-    cursor = db.training_plans.find(query).sort("created_at", -1)
+    projection = _parse_projection(fields)
+    cursor = db.training_plans.find(query, projection).sort("created_at", -1)
     plans = []
     async for doc in cursor:
         plans.append(_serialize_training_plan(doc))

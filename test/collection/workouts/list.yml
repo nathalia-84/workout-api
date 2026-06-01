@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8000/api/workouts
+  url: http://localhost:8000/api/workouts?query={"name":{"$regex":"ev","$options":"i"}}
+  params:
+    - name: query
+      value: '{"name":{"$regex":"ev","$options":"i"}}'
+      type: query
   auth: inherit
 
 runtime:
