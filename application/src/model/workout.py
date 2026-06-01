@@ -42,18 +42,18 @@ class WorkoutUpdate(BaseModel):
 
 
 class WorkoutResponse(BaseModel):
-    workout_id: str = Field(validation_alias=AliasChoices("_id", "workout_id"))
+    workout_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("_id", "workout_id"))
     user_id: Optional[str] = None
-    name: str
-    exercises: list[WorkoutExercise]
-    created_at: datetime
-    updated_at: datetime
+    name: Optional[str] = None
+    exercises: Optional[list[WorkoutExercise]] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     @field_validator("workout_id", mode="before")
     @classmethod
-    def convert_object_id(cls, value) -> str:
+    def convert_object_id(cls, value) -> Optional[str]:
         if isinstance(value, ObjectId):
             return str(value)
         return value

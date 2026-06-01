@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 
 from bson import ObjectId
 from pymongo import ReturnDocument
 from pymongo.asynchronous.database import AsyncDatabase
 
 from src.model.workout import WorkoutCreate, WorkoutExercise, WorkoutUpdate
+
+
+class InvalidQueryError(ValueError):
+    pass
 
 
 def _utc_now() -> datetime:
@@ -49,6 +54,18 @@ def _serialize_workout(doc: dict) -> dict:
     return out
 
 
+def _parse_query(query_str: str | None) -> dict:
+    if not query_str or not query_str.strip():
+        return {}
+    try:
+        parsed = json.loads(query_str)
+        if not isinstance(parsed, dict):
+            raise InvalidQueryError("Query must be a valid JSON object")
+        return parsed
+    except json.JSONDecodeError as exc:
+        raise InvalidQueryError(f"Invalid JSON syntax in query: {str(exc)}")
+
+
 async def create_workout(
     db: AsyncDatabase, payload: WorkoutCreate, *, user_id: str | None = None
 ) -> dict:
@@ -69,13 +86,14 @@ async def create_workout(
 
 
 async def list_workouts(
-    db: AsyncDatabase, *, user_id: str | None = None, limit: int = 100
+    db: AsyncDatabase, *, user_id: str | None = None, query_str: str | None = None, limit: int = 100
 ) -> list[dict]:
-    query: dict = {}
-    if user_id is not None:
-        query["user_id"] = user_id
+    filters = _parse_query(query_str)
 
-    cursor = db.workouts.find(query).sort("created_at", -1).limit(limit)
+    if user_id is not None:
+        filters["user_id"] = user_id
+
+    cursor = db.workouts.find(filters).sort("created_at", -1).limit(limit)
     items: list[dict] = []
     async for doc in cursor:
         items.append(_serialize_workout(doc))

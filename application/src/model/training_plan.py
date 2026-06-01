@@ -6,7 +6,7 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator
 
 
 class TrainingPlanScheduleItem(BaseModel):
-    weekday: int = Field(ge=0, le=6)  # 0=Monday, 6=Sunday
+    weekday: int = Field(ge=0, le=6)
     workout_id: str
 
     model_config = ConfigDict(extra="forbid")
@@ -34,18 +34,18 @@ class TrainingPlanUpdate(BaseModel):
 
 
 class TrainingPlanResponse(BaseModel):
-    plan_id: str = Field(validation_alias=AliasChoices("_id", "plan_id"))
+    plan_id: Optional[str] = Field(default=None, validation_alias=AliasChoices("_id", "plan_id"))
     user_id: Optional[str] = None
-    name: str
-    schedule: list[TrainingPlanScheduleItem]
-    created_at: datetime
-    updated_at: datetime
+    name: Optional[str] = None
+    schedule: Optional[list[TrainingPlanScheduleItem]] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     @field_validator("plan_id", mode="before")
     @classmethod
-    def convert_object_id(cls, value) -> str:
+    def convert_object_id(cls, value) -> Optional[str]:
         if isinstance(value, ObjectId):
             return str(value)
         return value

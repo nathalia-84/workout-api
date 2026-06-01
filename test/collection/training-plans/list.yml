@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8000/api/training-plans
+  url: http://localhost:8000/api/training-plans?fields=name
+  params:
+    - name: fields
+      value: name
+      type: query
   auth: inherit
 
 runtime:
