@@ -112,14 +112,23 @@ async def list_workouts(
     user_id: str | None = None,
     query_str: str | None = None,
     fields: str | None = None,
-    limit: int = 100,
+    page: int = 1,
+    limit: int = 10,
 ) -> list[dict]:
     filters = _parse_query(query_str)
     if user_id is not None:
         filters["user_id"] = user_id
 
     projection = _parse_projection(fields)
-    cursor = db.workouts.find(filters, projection).sort("created_at", -1).limit(limit)
+    skip = (page - 1) * limit
+
+    cursor = (
+        db.workouts.find(filters, projection)
+        .sort("created_at", -1)
+        .skip(skip)
+        .limit(limit)
+    )
+
     items: list[dict] = []
     async for doc in cursor:
         items.append(_serialize_workout(doc))
