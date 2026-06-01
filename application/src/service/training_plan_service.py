@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import json
 import re
 
 from bson import ObjectId
@@ -12,6 +13,10 @@ from src.model.training_plan import (
     TrainingPlanUpdate,
     TrainingPlanScheduleItem,
 )
+
+
+class InvalidQueryError(ValueError):
+    pass
 
 
 class InvalidFieldsError(ValueError):
@@ -60,6 +65,18 @@ def _serialize_training_plan(doc: dict) -> dict:
     return out
 
 
+def _parse_query(query_str: str | None) -> dict:
+    if not query_str or not query_str.strip():
+        return {}
+    try:
+        parsed = json.loads(query_str)
+        if not isinstance(parsed, dict):
+            raise InvalidQueryError("Query must be a valid JSON object")
+        return parsed
+    except json.JSONDecodeError as exc:
+        raise InvalidQueryError(f"Invalid JSON syntax in query: {str(exc)}")
+
+
 def _parse_projection(fields: str | None) -> dict | None:
     if not fields or not fields.strip():
         return None
@@ -70,7 +87,7 @@ def _parse_projection(fields: str | None) -> dict | None:
     for field in fields.split(","):
         clean_field = field.strip()
         if not pattern.match(clean_field):
-            raise InvalidFieldsError(f"Invalid field syntax: '{field}'")
+            raise InvalidFieldsError(f"Invalid MongoDB projection syntax: '{field}'")
         projection[clean_field] = 1
 
     return projection
@@ -108,14 +125,14 @@ async def get_training_plan(
 
 
 async def list_training_plans(
-    db: AsyncDatabase, *, user_id: str | None = None, fields: str | None = None
+    db: AsyncDatabase, *, user_id: str | None = None, query_str: str | None = None, fields: str | None = None
 ) -> list[dict]:
-    query = {}
+    filters = _parse_query(query_str)
     if user_id is not None:
-        query["user_id"] = user_id
+        filters["user_id"] = user_id
 
     projection = _parse_projection(fields)
-    cursor = db.training_plans.find(query, projection).sort("created_at", -1)
+    cursor = db.training_plans.find(filters, projection).sort("created_at", -1)
     plans = []
     async for doc in cursor:
         plans.append(_serialize_training_plan(doc))
