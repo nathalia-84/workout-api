@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from src.core.dependencies import get_db
 from src.model.workout import WorkoutCreate, WorkoutResponse, WorkoutUpdate
 from src.service.workout_service import (
+    InvalidQueryError,
     create_workout as create_workout_service,
     delete_workout as delete_workout_service,
     get_workout as get_workout_service,
@@ -10,18 +11,13 @@ from src.service.workout_service import (
     update_workout as update_workout_service,
 )
 
-
 router = APIRouter(
     prefix="/workouts",
     tags=["workout"],
 )
 
-# TODO: the service layer already scopes every query by `user_id`, but it is
-# never passed here. Inject the authenticated user (e.g. Depends(get_current_user))
-# and forward it to enforce per-user ownership before this is exposed publicly.
 
-
-@router.post("/", response_model=WorkoutResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=WorkoutResponse, status_code=status.HTTP_201_CREATED, response_model_exclude_none=True)
 async def create_workout(payload: WorkoutCreate, db=Depends(get_db)):
     try:
         return await create_workout_service(db, payload)
@@ -31,15 +27,21 @@ async def create_workout(payload: WorkoutCreate, db=Depends(get_db)):
         )
 
 
-@router.get("/", response_model=list[WorkoutResponse])
+@router.get("/", response_model=list[WorkoutResponse], response_model_exclude_none=True)
 async def list_workouts(
+    query: str | None = Query(None),
     limit: int = Query(default=100, ge=1, le=500),
     db=Depends(get_db),
 ):
-    return await list_workouts_service(db, limit=limit)
+    try:
+        return await list_workouts_service(db, query_str=query, limit=limit)
+    except InvalidQueryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
 
 
-@router.get("/{workout_id}", response_model=WorkoutResponse)
+@router.get("/{workout_id}", response_model=WorkoutResponse, response_model_exclude_none=True)
 async def get_workout(workout_id: str, db=Depends(get_db)):
     try:
         workout = await get_workout_service(db, workout_id)
@@ -56,7 +58,7 @@ async def get_workout(workout_id: str, db=Depends(get_db)):
     return workout
 
 
-@router.patch("/{workout_id}", response_model=WorkoutResponse)
+@router.patch("/{workout_id}", response_model=WorkoutResponse, response_model_exclude_none=True)
 async def update_workout(workout_id: str, payload: WorkoutUpdate, db=Depends(get_db)):
     try:
         workout = await update_workout_service(db, workout_id, payload)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 from src.core.dependencies import get_db
 from src.model.training_plan import (
@@ -7,6 +7,7 @@ from src.model.training_plan import (
     TrainingPlanUpdate,
 )
 from src.service.training_plan_service import (
+    InvalidFieldsError,
     create_training_plan as create_training_plan_service,
     delete_training_plan as delete_training_plan_service,
     get_training_plan as get_training_plan_service,
@@ -19,10 +20,6 @@ router = APIRouter(
     prefix="/training-plans",
     tags=["training-plan"],
 )
-
-# TODO: the service layer already scopes every query by `user_id`, but it is
-# never passed here. Inject the authenticated user (e.g. Depends(get_current_user))
-# and forward it to enforce per-user ownership before this is exposed publicly.
 
 
 @router.post(
@@ -37,15 +34,24 @@ async def create_training_plan(payload: TrainingPlanCreate, db=Depends(get_db)):
         )
 
 
-@router.get("/", response_model=list[TrainingPlanResponse])
-async def list_training_plans(db=Depends(get_db)):
-    return await list_training_plans_service(db)
-
-
-@router.get("/{plan_id}", response_model=TrainingPlanResponse)
-async def get_training_plan(plan_id: str, db=Depends(get_db)):
+@router.get("/", response_model=list[TrainingPlanResponse], response_model_exclude_none=True)
+async def list_training_plans(fields: str | None = Query(None), db=Depends(get_db)):
     try:
-        plan = await get_training_plan_service(db, plan_id)
+        return await list_training_plans_service(db, fields=fields)
+    except InvalidFieldsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
+
+
+@router.get("/{plan_id}", response_model=TrainingPlanResponse, response_model_exclude_none=True,)
+async def get_training_plan(plan_id: str, fields: str | None = Query(None), db=Depends(get_db)):
+    try:
+        plan = await get_training_plan_service(db, plan_id, fields=fields)
+    except InvalidFieldsError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        )
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
