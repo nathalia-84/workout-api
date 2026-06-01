@@ -1,24 +1,25 @@
 info:
-  name: create
+  name: registrate
   type: http
   seq: 1
 
 http:
   method: POST
-  url: http://localhost:8000/api/training-plans
+  url: http://localhost:8000/auth/registrations
   body:
     type: json
     data: |-
       {
-        "name": "{{$randomBs}}",
-        "schedule": []
+        "username": "{{$randomUserName}}",
+        "email": "{{$randomEmail}}",
+        "password": "{{$randomPassword}}"
       }
   auth: inherit
 
 runtime:
   scripts:
     - type: after-response
-      code: bru.setVar("trainingPlan", res.body)
+      code: bru.setVar("user", req.body)
 
 settings:
   encodeUrl: true

@@ -4,11 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.12"
 dependencies = [
+    "bcrypt>=5.0.0",
     "fastapi>=0.136.1",
-    "passlib[bcrypt]>=1.7.4",
     "pydantic-settings>=2.14.1",
+    "pydantic[email]>=2.13.4",
+    "pyjwt[crypto]>=2.13.0",
     "pymongo>=4.17.0",
     "python-jose[cryptography]>=3.5.0",
+    "python-multipart>=0.0.30",
     "uvicorn[standard]>=0.47.0",
 ]
 
